@@ -1,0 +1,89 @@
+rm(list = ls())
+library(graphics); library(compositions); library(mgcv);library(mvoutlier);library(robCompositions)
+#
+setwd("F:/02 Congreso AIDIS/r")
+
+filename<-"Water_as.csv"; 
+data<-read.csv(file=filename, header=TRUE, sep = ";", dec = "."); data0W<-data; levels(data0W$country)
+
+xlimgraf <-c(2000,2021); 
+deltazero <- 0.5E-3
+
+plotpdf<-TRUE
+
+################################
+# FIGURA 2
+################################
+if(plotpdf){pdf(file=paste("plots_ALL_water.pdf"),width=9, height=9)}
+
+ylimgraf <-c(0.,1.); 
+ylimgraf2<-c(0.,1.); 
+ylimgraf3<-c(0.,1); #water
+#ylimgraf3<-c(0.,1.); #san
+
+ylimgraf4<-c(0.,1.); 
+ylimgraf5<-c(0.,1.); 
+ylimgraf6<-c(0.,1.); 
+
+#kk<-4 GAM dof 
+kk<-4
+
+graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
+  dataexp<-xx[,1]
+  yearini <- year[1]
+  tt <- year - yearini
+  ttt<-c((-2):(max(tt)+2)) 
+  plot(tt+yearini,xx[,1], lwd=c(1), col=c("blue"),pch=c(1),xlim=xlimgraf,ylim=ylimgraf,xlab="",ylab="", cex.axis=1);
+  points(tt+yearini,xx[,2],col="green",pch=2)
+  points(tt+yearini,xx[,3],col="red",pch=3)
+  points(tt+yearini,xx[,4],col="black",pch=4)
+  #legend(2000,1,c("Piped","Ot.Mejorado","superficial","Ot.No.Mejorado"),col=c("blue","green","red","black"),pch=c(1,2,3,4))
+  
+  dd<- unclass(ilr(xx,VV)); 
+  plot(tt+yearini,dd[,1], lwd=c(1), col=c("blue"),pch=c(1),xlim=xlimgraf,ylim=c(-3,5),xlab="",ylab="", cex.axis=1);
+  points(tt+yearini,dd[,2],col="green",pch=2)
+  points(tt+yearini,dd[,3],col="red",pch=3)
+  
+ 
+  m1=outCoDa(xx, quantile = 0.975, method = "robust")
+  plot(m1) # plots robust estimates of Mahalanobis distance
+  #plot(year,m1[,1], lwd=c(1), col=c("blue"),pch=c(1),xlim=xlimgraf,ylim=c(-3,5),xlab="",ylab="", cex.axis=1);
+
+  m1=outCoDa(xx, quantile = 0.975, method = "robust")
+  m2=cbind(m1$mahalDist)
+  plot(tt+yearini,m2,xlab="year",ylab="Robust Mahalanobis distance") # plots robust estimates of Mahalanobis distance
+  #plot(year,m1[,1], lwd=c(1), col=c("blue"),pch=c(1),xlim=xlimgraf,ylim=c(-3,5),xlab="",ylab="", cex.axis=1);
+  #fili=data[,3]
+  #labels <- rownames(data[,3])
+  text(tt+yearini,m2,cex = 0.7, pos = 1.1)
+  }
+
+data0 <- data0W;  # WATER 
+iipais<-1; 
+
+for (iipais in c(1:length(levels(data0$country))))
+{par(mfrow=c(2,2))
+  pais<-levels(data0$country)[iipais]; data<-data0[data0$country==pais,]; 
+  aux<-!is.na(data[,9]);  xx<-data[aux,c(9:12)]; year<-data[aux,4]; #RURAL
+  xx[xx==0.]<-deltazero;
+  signs <- rbind (c( 1, 1, -1, -1),c(1, -1, 0, 0),c(0, 0, 1, -1)); VV=gsi.buildilrBase(t(signs))
+  graficoVV(xx,year,ylimgraf4,xlimgraf,VV,kk)
+  title(paste("a.1) PIPED W. Rur. - ",pais), cex.main=1.2)
+  legend(2000,.30, c("OLS","OLS(ilr)","GAM(ilr)"),text.width=4, seg.len=2.,y.intersp=1.,cex=1.,lty=c(3,1,1), lwd=c(2,2,2),col=c("black","black","blue"))
+  
+  par(mfrow=c(1,1))}
+
+for (iipais in c(1:length(levels(data0$country))))
+{par(mfrow=c(2,2))
+  pais<-levels(data0$country)[iipais]; data<-data0[data0$country==pais,]; 
+  aux<-!is.na(data[,13]);  xx<-data[aux,c(13:16)]; year<-data[aux,4]; #URBAN
+  xx[xx==0.]<-deltazero;
+  signs <- rbind (c( 1, 1, -1, -1),c(1, -1, 0, 0),c(0, 0, 1, -1)); VV=gsi.buildilrBase(t(signs))
+  graficoVV(xx,year,ylimgraf4,xlimgraf,VV,kk)
+  title(paste("a.1) PIPED W. Urb. - ",pais), cex.main=1.2)
+  legend(2000,.30, c("OLS","OLS(ilr)","GAM(ilr)"),text.width=4, seg.len=2.,y.intersp=1.,cex=1.,lty=c(3,1,1), lwd=c(2,2,2),col=c("black","black","blue"))
+  
+  par(mfrow=c(1,1))}
+#
+
+#
