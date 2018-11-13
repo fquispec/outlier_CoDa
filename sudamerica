@@ -85,7 +85,7 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
   points(tt+yearini,xx[,2],col="green",pch=2)
   points(tt+yearini,xx[,3],col="red",pch=3)
   points(tt+yearini,xx[,4],col="black",pch=4)
-  legend(2024,0.65,c("Piped","Ot.Mejorado","superficial","Ot.No.Mejorado"),col=c("blue","green","red","black"),pch=c(1,2,3,4))
+  legend(2026,0.65,c("Piped","Ot.Mejorado","superficial","Ot.No.Mejorado"),col=c("blue","green","red","black"),pch=c(1,2,3,4))
   
   }
 
