@@ -33,9 +33,9 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
   dataexp<-xx[,1]
   yearini <- year[1]
   tt <- year - yearini
-  #ttt<-c((-2):(max(tt)+2)) 
-  ttt<-c(2000:2030) - yearini 
-  tttt=year
+  ttt<-c((-2):(max(tt)+2)) 
+  tttt<-c(2000:2030) - yearini 
+  #tttt=c(2000:2030)
   #Plot1:Gráfica de composiciones
   plot(tt+yearini,xx[,1], lwd=c(1), col=c("blue"),pch=c(1),xlim=xlimgraf,ylim=ylimgraf,xlab="year",ylab="cobertura", cex.axis=1);
   points(tt+yearini,xx[,2],col="green",pch=2)
@@ -48,7 +48,7 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
   plot(tt+yearini,dd[,1], lwd=c(1), col=c("blue"),pch=c(13),xlim=xlimgraf,ylim=c(-3,8),xlab="year",ylab="Transformadas ilr", cex.axis=1);
   points(tt+yearini,dd[,2],col="green",pch=9)
   points(tt+yearini,dd[,3],col="black",pch=8)
-  legend(2015.5,1,c("ilr1","ilr2","ilr3"),col=c("blue","green","black"),pch=c(13,9,8))
+  legend(2015.5,3,c("ilr1","ilr2","ilr3"),col=c("blue","green","black"),pch=c(13,9,8))
   
   #Plot3:Gráfica de Outliers
   m1=outCoDa(xx, quantile = 0.975, method = "robust")
@@ -58,7 +58,6 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
   m2=cbind(m1$mahalDist)
   plot(tt+yearini,m2,xlab="year",ylab="Robust Mahalanobis distance") + # plots robust estimates of Mahalanobis distance
   #ggplot(geom_text(aes(x=tt+yearini,y=m2,label = data[,3])))
-  #ggplot(geom_text(aes(x=tt+yearini,y=m2,label = data[,3]))) 
   text(tt+yearini,m2,cex = 0.7, pos = 1.1)
   
   #Plot5:Gráfica de estimaciones ILR (Año:2000-2030).
@@ -66,14 +65,27 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
   gam2 <- gam(dd[,2]~ s(year,k=kk), family=gaussian); gam2.pred <- predict.gam(gam2);
   gam3 <- gam(dd[,3]~ s(year,k=kk), family=gaussian); gam3.pred <- predict.gam(gam3);
   plot(year,gam1.pred, type="l",col=c("blue"),xlab="year",ylab="Transformadas ilr",xlim=xlimgraf,ylim=c(-3,8),cex.axis=1);
-  lines(year,gam2.pred,type="l",col="green");lines(year,gam3.pred,type="l",col="black")
+  lines(year,gam2.pred,type="l",col="green");
+  lines(year,gam3.pred,type="l",col="black")
   points(tt+yearini,dd[,1],col="blue",pch=13)
   points(tt+yearini,dd[,2],col="green",pch=9)
   points(tt+yearini,dd[,3],col="black",pch=8)
-  legend(2015.5,1,c("ilr1","ilr2","ilr3"),col=c("blue","green","black"),pch=c(13,9,8))
+  legend(2015.5,3,c("ilr1","ilr2","ilr3"),col=c("blue","green","black"),pch=c(13,9,8))
 
   #Plot6:Gráfica de estimaciones en composiciones (GAM),(Año:2000-2030).
-  
+  gam1 <- gam(dd[,1] ~ s(tt,k=kk), family=gaussian);     gam1.pred <- predict.gam(gam1, data.frame(tt=tttt))
+  gam2 <- gam(dd[,2] ~ s(tt,k=kk), family=gaussian);     gam2.pred <- predict.gam(gam2, data.frame(tt=tttt))
+  gam3 <- gam(dd[,3] ~ s(tt,k=kk), family=gaussian);     gam3.pred <- predict.gam(gam3, data.frame(tt=tttt))
+  zzz1<-ilrInv(array(cbind(gam1.pred,gam2.pred,gam3.pred),dim = c(length(gam1.pred),3)),VV)
+  plot(tttt+yearini,zzz1[,1], type="l",col=c("blue"),xlab="year",ylab="cobertura",xlim=c(2000,2036),ylim=c(0,1),cex.axis=1);
+  lines(tttt+yearini,zzz1[,2],type="l",col="green");
+  lines(tttt+yearini,zzz1[,3],type="l",col="red");
+  lines(tttt+yearini,zzz1[,4],type="l",col="black");
+  points(tt+yearini,xx[,1],col="blue",pch=1)
+  points(tt+yearini,xx[,2],col="green",pch=2)
+  points(tt+yearini,xx[,3],col="red",pch=3)
+  points(tt+yearini,xx[,4],col="black",pch=4)
+  legend(2024,0.65,c("Piped","Ot.Mejorado","superficial","Ot.No.Mejorado"),col=c("blue","green","red","black"),pch=c(1,2,3,4))
   
   }
 
