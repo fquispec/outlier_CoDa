@@ -1,5 +1,6 @@
 rm(list = ls())
-library(graphics); library(compositions); library(mgcv);library(mvoutlier);library(robCompositions)
+library(graphics); library(compositions); library(mgcv);
+library(mvoutlier);library(robCompositions);#library(ggplot2)
 #
 setwd("F:/02 Congreso AIDIS/r")
 
@@ -36,7 +37,7 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
   ttt<-c(2000:2030) - yearini 
   tttt=year
   #Plot1:Gráfica de composiciones
-  plot(tt+yearini,xx[,1], lwd=c(1), col=c("blue"),pch=c(1),xlim=xlimgraf,ylim=ylimgraf,xlab="",ylab="", cex.axis=1);
+  plot(tt+yearini,xx[,1], lwd=c(1), col=c("blue"),pch=c(1),xlim=xlimgraf,ylim=ylimgraf,xlab="year",ylab="cobertura", cex.axis=1);
   points(tt+yearini,xx[,2],col="green",pch=2)
   points(tt+yearini,xx[,3],col="red",pch=3)
   points(tt+yearini,xx[,4],col="black",pch=4)
@@ -44,7 +45,7 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
  
   #Plot2:Gráfica de Transformadas(ilr)
   dd<- unclass(ilr(xx,VV)); 
-  plot(tt+yearini,dd[,1], lwd=c(1), col=c("blue"),pch=c(13),xlim=xlimgraf,ylim=c(-3,5),xlab="",ylab="", cex.axis=1);
+  plot(tt+yearini,dd[,1], lwd=c(1), col=c("blue"),pch=c(13),xlim=xlimgraf,ylim=c(-3,8),xlab="year",ylab="Transformadas ilr", cex.axis=1);
   points(tt+yearini,dd[,2],col="green",pch=9)
   points(tt+yearini,dd[,3],col="black",pch=8)
   legend(2015.5,1,c("ilr1","ilr2","ilr3"),col=c("blue","green","black"),pch=c(13,9,8))
@@ -55,16 +56,16 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
   
   #Plot4:Gráfica de outliers en función al año
   m2=cbind(m1$mahalDist)
-  plot(tt+yearini,m2,xlab="year",ylab="Robust Mahalanobis distance") # plots robust estimates of Mahalanobis distance
+  plot(tt+yearini,m2,xlab="year",ylab="Robust Mahalanobis distance") + # plots robust estimates of Mahalanobis distance
+  #ggplot(geom_text(aes(x=tt+yearini,y=m2,label = data[,3])))
+  #ggplot(geom_text(aes(x=tt+yearini,y=m2,label = data[,3]))) 
   text(tt+yearini,m2,cex = 0.7, pos = 1.1)
   
   #Plot5:Gráfica de estimaciones ILR (Año:2000-2030).
   gam1 <- gam(dd[,1]~ s(year,k=kk), family=gaussian); gam1.pred <- predict.gam(gam1);
   gam2 <- gam(dd[,2]~ s(year,k=kk), family=gaussian); gam2.pred <- predict.gam(gam2);
   gam3 <- gam(dd[,3]~ s(year,k=kk), family=gaussian); gam3.pred <- predict.gam(gam3);
-  #zzz1<-array(cbind(gam1.pred,gam2.pred,gam3.pred),dim = c(length(gam1.pred),3))
-  #lines(year,zzz1[,1],type="l",lwd=c(2),col="blue")
-  plot(year,gam1.pred, type="l",col=c("blue"), xlim=xlimgraf,ylim=c(-3,5),cex.axis=1);
+  plot(year,gam1.pred, type="l",col=c("blue"),xlab="year",ylab="Transformadas ilr",xlim=xlimgraf,ylim=c(-3,8),cex.axis=1);
   lines(year,gam2.pred,type="l",col="green");lines(year,gam3.pred,type="l",col="black")
   points(tt+yearini,dd[,1],col="blue",pch=13)
   points(tt+yearini,dd[,2],col="green",pch=9)
