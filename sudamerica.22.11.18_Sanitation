@@ -1,0 +1,130 @@
+rm(list = ls())
+library(graphics); library(compositions); library(mgcv);library(robCompositions);library(hydroGOF);
+library(mvoutlier);#library(gridExtra)
+#library(ggplot2)
+#
+setwd("F:/02 Congreso AIDIS/r/02.Sanitation")
+
+filename<-"Sanitation_as.csv"; 
+data<-read.csv(file=filename, header=TRUE, sep = ";", dec = "."); data0W<-data; levels(data0W$country)
+
+xlimgraf <-c(2000,2021); 
+deltazero <- 0.5E-3
+
+plotpdf<-TRUE
+
+################################
+# FIGURA 2
+################################
+if(plotpdf){pdf(file=paste("Sanitation_22.11.18.pdf"),width=9, height=9)}
+
+ylimgraf <-c(0.,1.); 
+ylimgraf2<-c(0.,1.); 
+ylimgraf3<-c(0.,1); #sanitation
+#ylimgraf3<-c(0.,1.); #san
+
+ylimgraf4<-c(0.,1.); 
+ylimgraf5<-c(0.,1.); 
+ylimgraf6<-c(0.,1.); 
+
+#kk<-4 GAM dof 
+kk<-4
+
+graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
+  dataexp<-xx[,1]
+  yearini <- year[1]
+  tt <- year - yearini
+  ttt<-c((-2):(max(tt)+2)) 
+  tttt<-c(2000:2030) - yearini 
+  #tttt=c(2000:2030)
+  #Plot1:Gráfica de composiciones
+  plot(tt+yearini,xx[,1], lwd=c(1),main=title(paste("a.1 Data compositional - Sanitation - ",pais), cex.main=1.2),
+       col=c("blue"),pch=c(1),xlim=xlimgraf,ylim=ylimgraf,xlab="year",ylab="cobertura", cex.axis=1);
+  points(tt+yearini,xx[,2],col="green",pch=2,text(tt+yearini,xx[,2],cex = 1.1, pos = 3))
+  points(tt+yearini,xx[,3],col="red",pch=3)
+  points(tt+yearini,xx[,4],col="black",pch=4)
+  legend(2015.5,1,c("Piped","Ot.Mejorado","superficial","Ot.No.Mejorado"),col=c("blue","green","red","black"),pch=c(1,2,3,4))
+  
+  #Plot2:Gráfica de Transformadas(ilr)
+  dd<- unclass(ilr(xx,VV));
+  gam1 <- gam(dd[,1]~ s(year,k=kk), family=gaussian); gam1.pred <- predict.gam(gam1);r.sq1=format(round(summary(gam1)$r.sq,digits=3),nsmall=3)
+  gam2 <- gam(dd[,2]~ s(year,k=kk), family=gaussian); gam2.pred <- predict.gam(gam2);r.sq2=format(round(summary(gam2)$r.sq,digits=3),nsmall=3)
+  gam3 <- gam(dd[,3]~ s(year,k=kk), family=gaussian); gam3.pred <- predict.gam(gam3);r.sq3=format(round(summary(gam3)$r.sq,digits=3),nsmall=3)
+  zzz1<-ilrInv(array(cbind(gam1.pred,gam2.pred,gam3.pred),dim = c(length(gam1.pred),3)),VV)
+  plot(tt+yearini,gam1.pred, type="l",main=title(paste("a.2 Transformed model ilr - Sanitation - ",pais), cex.main=1.2),
+       col=c("blue"),xlab="year",ylab="Transformadas ilr",xlim=xlimgraf,ylim=c(-5,8),cex.axis=1);
+  lines(tt+yearini,gam2.pred,type="l",col="green");
+  lines(tt+yearini,gam3.pred,type="l",col="black")
+  points(tt+yearini,dd[,1],col="blue",pch=13)
+  points(tt+yearini,dd[,2],col="green",pch=9,text(tt+yearini,dd[,2],cex = 1.1, pos = 3))
+  points(tt+yearini,dd[,3],col="black",pch=8)
+  legend(2015.5,3,paste(c("ilr ","ilr1 ","ilr2 ","ilr3 "),c("  R-adJ", r.sq1, r.sq2, r.sq3)),
+         col=c("white","blue","green","black"),pch=c(1,13,9,8))
+  
+  
+  #Plot3:Gráfica de outliers en función al año
+  m1=outCoDa(xx, quantile = 0.975, method = "robust")
+  m2=cbind(m1$mahalDist)
+  plot(tt+yearini,m2,xlim=xlimgraf, xlab="year",ylab="Robust Mahalanobis distance") # plots robust estimates of Mahalanobis distance
+  text(tt+yearini,m2,main=title(paste("a.3 Outliers treatment method - Sanitation - ",pais), cex.main=1.2),cex = 1, pos = 1)
+  
+  #Plot4:Gráfica de Outliers
+  plot(m1) # plots robust estimates of Mahalanobis distance
+  
+  
+  #Plot5:Métrica de calidad de modelo.
+  a1=format(round(NSE(zzz1[,1],xx[,1]),digits=2),nsmall=2);a2=format(round(NSE(zzz1[,2],xx[,2]),digits=2),nsmall=2);a3=format(round(NSE(zzz1[,3],xx[,3]),digits=2),nsmall=2);a4=format(round(NSE(zzz1[,4],xx[,4]),2),nsmall=2)
+  r1=format(round(rmse(zzz1[,1],xx[,1]),digits=3),nsmall=3);r2=format(round(rmse(zzz1[,2],xx[,2]),digits=3),nsmall=3);r3=format(round(NSE(zzz1[,3],xx[,3]),digits=3),nsmall=3);r4=format(round(NSE(zzz1[,4],xx[,4]),3),nsmall=3)
+  eti=c("Indicador ","Entubado ","Ot.Mejora.","superficia.","Ot.no.Mej.");ns=c(" NSE",  a1,  a2,  a3, a4);rm=c("RMSE",  r1,  r2,  r3, r4);
+  #metrics=cbind(eti,ns,rm)
+  #plot(tttt+yearini,zzz2[,1],grid.table(metrics));
+  #plot(tttt+yearini,zzz2[,1], type="n");
+  plot(year,zzz1[,1],type="n",main=title(paste("a.5 Métrica de calidad de modelo - Sanitation - ",pais), cex.main=1.2),xlim=c(2000,2009),ylim=c(0,1),bty="n",xlab="",ylab="",xaxt="n",yaxt="n")
+  legend(2000,1.0,paste(eti,"_",ns,"_ ",rm),cex = 2)
+  #legend(2000,0.7,paste(c(ns)," _ ",c(rm),"     _ ",c(ad),"   _ ",c(pv)),
+  #      col=c("white","blue","green","black","yellow"),cex = 1)
+  
+  
+  #Plot6:Gráfica de estimaciones en composiciones (GAM),(Año:2000-2030).
+  gam1 <- gam(dd[,1] ~ s(tt,k=kk), family=gaussian);     gam1.pred <- predict.gam(gam1, data.frame(tt=tttt))
+  gam2 <- gam(dd[,2] ~ s(tt,k=kk), family=gaussian);     gam2.pred <- predict.gam(gam2, data.frame(tt=tttt))
+  gam3 <- gam(dd[,3] ~ s(tt,k=kk), family=gaussian);     gam3.pred <- predict.gam(gam3, data.frame(tt=tttt))
+  zzz2<-ilrInv(array(cbind(gam1.pred,gam2.pred,gam3.pred),dim = c(length(gam1.pred),3)),VV)
+  plot(tttt+yearini,zzz2[,1], type="l",col=c("blue"),xlab="year",ylab="cobertura",xlim=c(2000,2036),ylim=c(0,1),cex.axis=1);
+  lines(tttt+yearini,zzz2[,2],type="l",col="green");
+  lines(tttt+yearini,zzz2[,3],type="l",col="red");
+  lines(tttt+yearini,zzz2[,4],type="l",col="black");
+  points(tt+yearini,xx[,1],col="blue",pch=1)
+  points(tt+yearini,xx[,2],col="green",pch=2)
+  points(tt+yearini,xx[,3],col="red",pch=3)
+  points(tt+yearini,xx[,4],col="black",pch=4)
+  legend(2026,0.6,c("Entubado","Ot.Mejorado","superficial","Ot.No.Mejorado"),col=c("blue","green","red","black"),pch=c(1,2,3,4))
+  
+}
+
+data0 <- data0W;  # Sanitation
+iipais<-1; 
+
+for (iipais in c(1:length(levels(data0$country))))
+{par(mfrow=c(3,2))
+  pais<-levels(data0$country)[iipais]; data<-data0[data0$country==pais,]; 
+  aux<-!is.na(data[,9]);  xx<-data[aux,c(9:12)]; year<-data[aux,4]; #RURAL
+  xx[xx==0.]<-deltazero;
+  signs <- rbind (c( 1, 1, -1, -1),c(1, -1, 0, 0),c(0, 0, 1, -1)); VV=gsi.buildilrBase(t(signs))
+  graficoVV(xx,year,ylimgraf4,xlimgraf,VV,kk)
+  title(paste("a.6 Sanitation - Rural - ",pais), cex.main=1.2)
+  par(mfrow=c(1,1))}
+
+for (iipais in c(1:length(levels(data0$country))))
+{par(mfrow=c(3,2))
+  pais<-levels(data0$country)[iipais]; data<-data0[data0$country==pais,]; 
+  aux<-!is.na(data[,13]);  xx<-data[aux,c(13:16)]; year<-data[aux,4]; #URBAN
+  xx[xx==0.]<-deltazero;
+  signs <- rbind (c( 1, 1, -1, -1),c(1, -1, 0, 0),c(0, 0, 1, -1)); VV=gsi.buildilrBase(t(signs))
+  graficoVV(xx,year,ylimgraf4,xlimgraf,VV,kk)
+  title(paste("a.6 Sanitation - Urban - ",pais), cex.main=1.2)
+  par(mfrow=c(1,1))}
+#
+
+#
+if(plotpdf){dev.off()}
