@@ -72,7 +72,7 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
   
   #Plot5:Gráfica de estimaciones ILR (Año:2000-2030).
   a1=format(round(NSE(zzz1[,1],xx[,1]),digits=2),nsmall=2);a2=format(round(NSE(zzz1[,2],xx[,2]),digits=2),nsmall=2);a3=format(round(NSE(zzz1[,3],xx[,3]),digits=2),nsmall=2);a4=format(round(NSE(zzz1[,4],xx[,4]),2),nsmall=2)
-  r1=format(round(rmse(zzz1[,1],xx[,1]),digits=3),nsmall=3);r2=format(round(rmse(zzz1[,2],xx[,2]),digits=3),nsmall=3);r3=format(round(NSE(zzz1[,3],xx[,3]),digits=3),nsmall=3);r4=format(round(NSE(zzz1[,4],xx[,4]),3),nsmall=3)
+  r1=format(round(rmse(zzz1[,1],xx[,1]),digits=3),nsmall=3);r2=format(round(rmse(zzz1[,2],xx[,2]),digits=3),nsmall=3);r3=format(round(rmse(zzz1[,3],xx[,3]),digits=3),nsmall=3);r4=format(round(rmse(zzz1[,4],xx[,4]),3),nsmall=3)
   eti=c("Indicador ","Entubado ","Ot.Mejora.","superficia.","Ot.no.Mej.");ns=c(" NSE",  a1,  a2,  a3, a4);rm=c("RMSE",  r1,  r2,  r3, r4);
   #metrics=cbind(eti,ns,rm)
   #plot(tttt+yearini,zzz2[,1],grid.table(metrics));
