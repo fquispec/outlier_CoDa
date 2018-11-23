@@ -5,7 +5,7 @@ library(mvoutlier);#library(gridExtra)
 #
 setwd("F:/02 Congreso AIDIS/r/02.Sanitation")
 
-filename<-"Sanitation_as.csv"; 
+filename<-"Sanitation_as2.csv"; 
 data<-read.csv(file=filename, header=TRUE, sep = ";", dec = "."); data0W<-data; levels(data0W$country)
 
 xlimgraf <-c(2000,2021); 
@@ -16,7 +16,7 @@ plotpdf<-TRUE
 ################################
 # FIGURA 2
 ################################
-if(plotpdf){pdf(file=paste("Sanitation_23.11.18.pdf"),width=9, height=9)}
+if(plotpdf){pdf(file=paste("Sanitation_3_23.11.18.pdf"),width=9, height=9)}
 
 ylimgraf <-c(0.,1.); 
 ylimgraf2<-c(0.,1.); 
@@ -75,16 +75,10 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
   #Plot5:Métrica de calidad de modelo.
   a1=format(round(NSE(zzz1[,1],xx[,1]),digits=2),nsmall=2);a2=format(round(NSE(zzz1[,2],xx[,2]),digits=2),nsmall=2);a3=format(round(NSE(zzz1[,3],xx[,3]),digits=2),nsmall=2);a4=format(round(NSE(zzz1[,4],xx[,4]),2),nsmall=2)
   r1=format(round(rmse(zzz1[,1],xx[,1]),digits=3),nsmall=3);r2=format(round(rmse(zzz1[,2],xx[,2]),digits=3),nsmall=3);r3=format(round(rmse(zzz1[,3],xx[,3]),digits=3),nsmall=3);r4=format(round(rmse(zzz1[,4],xx[,4]),3),nsmall=3)
-  eti=c("Indicador ","Sewer      ","Ot.Impro. ","Open.Def.","Ot.Unimp.");ns=c(" NSE",  a1,  a2,  a3, a4);rm=c("RMSE",  r1,  r2,  r3, r4);
-  #metrics=cbind(eti,ns,rm)
-  #plot(tttt+yearini,zzz2[,1],grid.table(metrics));
-  #plot(tttt+yearini,zzz2[,1], type="n");
+  eti=c("Indicador ","Sewer      ","Ot.Impro. ","Open.Def.","Ot.Unimp.");ns=c(" NSE",  a1,  a2,  a3, a4);rm=c("RMSE",  r1,  r2,  r3, r4);ilr=c("ilr "," ilr1 "," ilr2 "," ilr3 ","      ");radj=c("  R-adJ", r.sq1, r.sq2, r.sq3,"     ")
   plot(year,zzz1[,1],type="n",main=title(paste("a.5 Métrica de calidad de modelo - Sanitation - ",pais), cex.main=1.2),xlim=c(2000,2009),ylim=c(0,1),bty="n",xlab="",ylab="",xaxt="n",yaxt="n")
-  legend(2000,1.0,paste(eti,"_",ns,"_ ",rm),cex = 2)
-  #legend(2000,0.7,paste(c(ns)," _ ",c(rm),"     _ ",c(ad),"   _ ",c(pv)),
-  #      col=c("white","blue","green","black","yellow"),cex = 1)
-  
-  
+  legend(2000,0.8,paste(eti,"_",ns,"_",rm,"_",ilr,"_",radj),cex = 1.5)
+
   #Plot6:Gráfica de estimaciones en composiciones (GAM),(Año:2000-2030).
   gam1 <- gam(dd[,1] ~ s(tt,k=kk), family=gaussian);     gam1.pred <- predict.gam(gam1, data.frame(tt=tttt))
   gam2 <- gam(dd[,2] ~ s(tt,k=kk), family=gaussian);     gam2.pred <- predict.gam(gam2, data.frame(tt=tttt))
@@ -128,4 +122,6 @@ for (iipais in c(1:length(levels(data0$country))))
 
 #
 if(plotpdf){dev.off()}
+
+
 
