@@ -16,7 +16,7 @@ plotpdf<-TRUE
 ################################
 # FIGURA 2
 ################################
-if(plotpdf){pdf(file=paste("out_sanitation.pdf"),width=13.2, height=9)}
+if(plotpdf){pdf(file=paste("out.GAM2_sanitation.pdf"),width=13.2, height=9)}
 
 ylimgraf <-c(0.,1.); 
 ylimgraf2<-c(0.,1.); 
@@ -112,14 +112,14 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk){
   legend(2000,0.8,paste(eti3,"_",ns3,"_",rm3,"_",ilr3,"_",radj3),cex = 1.5)
   
   #Plot3:Gráficas de estimaciones en composiciones (GAM),(Año:2000-2030).
-  gam1 <- gam(dd1[,1] ~ s(tt,k=kk), family=gaussian);     gam1.pred <- predict.gam(gam1, data.frame(tt=tttt))
-  gam2 <- gam(dd1[,2] ~ s(tt,k=kk), family=gaussian);     gam2.pred <- predict.gam(gam2, data.frame(tt=tttt))
-  gam3 <- gam(dd1[,3] ~ s(tt,k=kk), family=gaussian);     gam3.pred <- predict.gam(gam3, data.frame(tt=tttt))
-  zzz2<-ilrInv(array(cbind(gam1.pred,gam2.pred,gam3.pred),dim = c(length(gam1.pred),3)),VV1)
-  plot(tttt+yearini,zzz2[,1], type="l",col=c("blue"),xlab="year",ylab="cobertura",xlim=c(2000,2036),ylim=c(0,1),cex.axis=1);
-  lines(tttt+yearini,zzz2[,2],type="l",col="green");
-  lines(tttt+yearini,zzz2[,3],type="l",col="red");
-  lines(tttt+yearini,zzz2[,4],type="l",col="black");
+  gam1.1 <- gam(dd1[,1] ~ s(tt,k=kk), family=gaussian);     gam1.pred1 <- predict.gam(gam1.1, data.frame(tt=tttt));
+  gam2.1 <- gam(dd1[,2] ~ s(tt,k=kk), family=gaussian);     gam2.pred1 <- predict.gam(gam2.1, data.frame(tt=tttt));
+  gam3.1 <- gam(dd1[,3] ~ s(tt,k=kk), family=gaussian);     gam3.pred1 <- predict.gam(gam3.1, data.frame(tt=tttt));
+  zzz1.2<-ilrInv(array(cbind(gam1.pred1,gam2.pred1,gam3.pred1),dim = c(length(gam1.pred1),3)),VV1);
+  plot(tttt+yearini,zzz1.2[,1], type="l",col=c("blue"),xlab="year",ylab="cobertura",xlim=c(2000,2036),ylim=c(0,1),cex.axis=1);
+  lines(tttt+yearini,zzz1.2[,2],type="l",col="green");
+  lines(tttt+yearini,zzz1.2[,3],type="l",col="red");
+  lines(tttt+yearini,zzz1.2[,4],type="l",col="black");
   points(tt+yearini,xx[,1],col="blue",pch=1)
   points(tt+yearini,xx[,2],col="green",pch=2)
   points(tt+yearini,xx[,3],col="red",pch=3)
