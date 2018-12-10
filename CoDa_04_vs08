@@ -1,0 +1,384 @@
+rm(list = ls())
+library(graphics); library(compositions); library(mgcv);library(robCompositions);library(hydroGOF);
+library(mvoutlier);#library(gridExtra)
+#library(ggplot2)
+#
+setwd("F:/03.1 Congreso_CoDa")
+
+filename<-"02. Colombia_a8_a4.csv"; 
+data<-read.csv(file=filename, header=TRUE, sep = ";", dec = "."); 
+data0W<-data[1:17,]; data1w<-data[17:19,];
+levels(data0W$country)
+
+xlimgraf <-c(2000,2021); 
+ylimgraf=c(0,1)
+#ylimgraf4
+deltazero <- 0.5E-3
+
+plotpdf<-TRUE
+
+################################
+# FIGURA 2
+################################
+if(plotpdf){pdf(file=paste("Coda_04_8.pdf"),width=15, height=15)}
+
+#kk<-4 GAM dof 
+kk<-4
+
+graficoVV<-function(xx1,xx2,xx3,year1,year2,year3,ylimgraf4,xlimgraf,VV1,VV2,VV3,kk,yy1,yy2,yy3,year1.1,year2.1,year3.1){
+  #dataexp<-xx[,1]
+  yearini <- year[1]
+  tt <- year - yearini
+  #ttt<-c((-2):(max(tt)+2))
+  ttt=c(2000:max(year)) - yearini 
+  tttt<-c(2000:2030) - yearini 
+  
+  
+  #Plot1.1:Gráfica de composiciones
+  plot(tt+yearini,xx1[,1], lwd=c(1),main=title(paste("a.1 Data compositional - Sanitation - ",pais), cex.main=1.2),
+       col=c("blue"),pch=c(16),xlim=xlimgraf,ylim=ylimgraf,xlab="year",ylab="cobertura", cex.axis=1);
+  points(tt+yearini,xx1[,2],col="green",pch=15,text(tt+yearini,xx1[,2],cex = 1.1, pos = 3))
+  points(tt+yearini,xx1[,3],col="red",pch=17)
+  points(tt+yearini,xx1[,4],col="black",pch=18)
+  legend(2015.5,1,c("Sewer","Ot.Improved","Open_defecation","Ot.Unimproved"),col=c("blue","green","red","black"),pch=c(16,15,17,18))
+  
+  #Plot1.2:Gráfica de composiciones
+  plot(tt+yearini,xx2[,1], lwd=c(1),main=title(paste("a.1 Data compositional - Sanitation - ",pais), cex.main=1.2),
+       col=c("blue"),pch=c(16),xlim=xlimgraf,ylim=ylimgraf,xlab="year",ylab="cobertura", cex.axis=1);
+  points(tt+yearini,xx2[,2],col="green",pch=15,text(tt+yearini,xx2[,2],cex = 1.1, pos = 3))
+  points(tt+yearini,xx2[,3],col="red",pch=17)
+  points(tt+yearini,xx2[,4],col="black",pch=18)
+  legend(2015.5,1,c("Sewer","Ot.Improved","Open_defecation","Ot.Unimproved"),col=c("blue","green","red","black"),pch=c(16,15,17,18))
+  
+  #Plot1.3:Gráfica de composiciones
+  plot(tt+yearini,xx3[,1], lwd=c(1),main=title(paste("a.1 Data compositional - Sanitation - ",pais), cex.main=1.2),
+       col=c("blue"),pch=c(16),xlim=xlimgraf,ylim=ylimgraf,xlab="year",ylab="cobertura", cex.axis=1);
+  points(tt+yearini,xx3[,2],col="green",pch=15,text(tt+yearini,xx3[,2],cex = 1.1, pos = 3))
+  points(tt+yearini,xx3[,3],col="red",pch=17)
+  points(tt+yearini,xx3[,4],col="purple",pch=18)
+  points(tt+yearini,xx3[,5],col="black",pch=16) 
+  points(tt+yearini,xx3[,6],col="black",pch=15)
+  points(tt+yearini,xx3[,7],col="black",pch=17)
+  points(tt+yearini,xx3[,8],col="black",pch=18)
+  legend(2015.5,1,c("Sewer","Ot.Improved","Open_defecation","Ot.Unimproved",
+                    "Sewer","Ot.Improved","Open_defecation","Ot.Unimproved"),
+         col=c("blue","green","red","purple","black","black","black","black"),pch=c(16,15,17,18,16,15,17,18))
+  
+  #Plot2.1:Gráfica de Transformadas(ilr)_Rural
+  dd1<- unclass(ilr(xx1,VV1));
+  gam1.1 <- gam(dd1[,1]~ s(tt,k=kk), family=gaussian); 
+  gam2.1 <- gam(dd1[,2]~ s(tt,k=kk), family=gaussian);
+  gam3.1 <- gam(dd1[,3]~ s(tt,k=kk), family=gaussian); 
+  gam1.1.pred <- predict.gam(gam1.1);
+  gam2.1.pred <- predict.gam(gam2.1);
+  gam3.1.pred <- predict.gam(gam3.1);
+  r.sq1.1=format(round(summary(gam1.1)$r.sq,digits=3),nsmall=3)
+  r.sq2.1=format(round(summary(gam2.1)$r.sq,digits=3),nsmall=3)
+  r.sq3.1=format(round(summary(gam3.1)$r.sq,digits=3),nsmall=3)
+  zzz1<-ilrInv(array(cbind(gam1.1.pred,gam2.1.pred,gam3.1.pred),dim = c(length(gam1.1.pred),3)),VV1)
+  plot(tt+yearini,gam1.1.pred, type="l",main=title(paste("a.2 Transformed model ilr - Sanitation - ",pais), cex.main=1.2),
+       col=c("blue"),xlab="year",ylab="Transformadas ilr",xlim=xlimgraf,ylim=c(-5,8),cex.axis=1);
+  lines(tt+yearini,gam2.1.pred,type="l",col="green");
+  lines(tt+yearini,gam3.1.pred,type="l",col="black")
+  points(tt+yearini,dd1[,1],col="blue",pch=13)
+  points(tt+yearini,dd1[,2],col="green",pch=9,text(tt+yearini,dd1[,2],cex = 1.1, pos = 3))
+  points(tt+yearini,dd1[,3],col="black",pch=8)
+  legend(2015.5,3,paste(c("ilr ","ilr1 ","ilr2 ","ilr3 "),c("  R-adJ", r.sq1.1, r.sq2.1, r.sq3.1)),
+         col=c("white","blue","green","black"),pch=c(1,13,9,8))
+  
+  #Plot2.2:Gráfica de Transformadas(ilr)_Urban
+  dd2<- unclass(ilr(xx2,VV2));
+  gam1.2 <- gam(dd2[,1]~ s(tt,k=kk), family=gaussian); 
+  gam2.2 <- gam(dd2[,2]~ s(tt,k=kk), family=gaussian);
+  gam3.2 <- gam(dd2[,3]~ s(tt,k=kk), family=gaussian); 
+  gam1.2.pred <- predict.gam(gam1.2);
+  gam2.2.pred <- predict.gam(gam2.2);
+  gam3.2.pred <- predict.gam(gam3.2);
+  r.sq1.2=format(round(summary(gam1.2)$r.sq,digits=3),nsmall=3)
+  r.sq2.2=format(round(summary(gam2.2)$r.sq,digits=3),nsmall=3)
+  r.sq3.2=format(round(summary(gam3.2)$r.sq,digits=3),nsmall=3)
+  zzz2<-ilrInv(array(cbind(gam1.2.pred,gam2.2.pred,gam3.2.pred),dim = c(length(gam1.2.pred),3)),VV2)
+  plot(tt+yearini,gam1.2.pred, type="l",main=title(paste("a.2 Transformed model ilr - Sanitation - ",pais), cex.main=1.2),
+       col=c("blue"),xlab="year",ylab="Transformadas ilr",xlim=xlimgraf,ylim=c(-5,8),cex.axis=1);
+  lines(tt+yearini,gam2.2.pred,type="l",col="green");
+  lines(tt+yearini,gam3.2.pred,type="l",col="black")
+  points(tt+yearini,dd2[,1],col="blue",pch=13)
+  points(tt+yearini,dd2[,2],col="green",pch=9,text(tt+yearini,dd2[,2],cex = 1.1, pos = 3))
+  points(tt+yearini,dd2[,3],col="black",pch=8)
+  legend(2015.5,3,paste(c("ilr ","ilr1 ","ilr2 ","ilr3 "),c("  R-adJ", r.sq1.2, r.sq2.2, r.sq3.2)),
+         col=c("white","blue","green","black"),pch=c(1,13,9,8))
+  
+  #Plot2.3:Gráfica de Transformadas(ilr)_Rural/Urban
+  dd3<- unclass(ilr(xx3,VV3));
+  gam1.3 <- gam(dd3[,1]~ s(tt,k=kk), family=gaussian); 
+  gam2.3 <- gam(dd3[,2]~ s(tt,k=kk), family=gaussian);
+  gam3.3 <- gam(dd3[,3]~ s(tt,k=kk), family=gaussian); 
+  gam4.3 <- gam(dd3[,4]~ s(tt,k=kk), family=gaussian);
+  gam5.3 <- gam(dd3[,5]~ s(tt,k=kk), family=gaussian);
+  gam6.3 <- gam(dd3[,6]~ s(tt,k=kk), family=gaussian);
+  gam7.3 <- gam(dd3[,7]~ s(tt,k=kk), family=gaussian);
+  gam1.3.pred <- predict.gam(gam1.3);
+  gam2.3.pred <- predict.gam(gam2.3);
+  gam3.3.pred <- predict.gam(gam3.3);
+  gam4.3.pred <- predict.gam(gam4.3);
+  gam5.3.pred <- predict.gam(gam5.3);
+  gam6.3.pred <- predict.gam(gam6.3);
+  gam7.3.pred <- predict.gam(gam7.3);
+  r.sq1.3=format(round(summary(gam1.3)$r.sq,digits=3),nsmall=3)
+  r.sq2.3=format(round(summary(gam2.3)$r.sq,digits=3),nsmall=3)
+  r.sq3.3=format(round(summary(gam3.3)$r.sq,digits=3),nsmall=3)
+  r.sq4.3=format(round(summary(gam4.3)$r.sq,digits=3),nsmall=3)
+  r.sq5.3=format(round(summary(gam5.3)$r.sq,digits=3),nsmall=3)
+  r.sq6.3=format(round(summary(gam6.3)$r.sq,digits=3),nsmall=3)
+  r.sq7.3=format(round(summary(gam7.3)$r.sq,digits=3),nsmall=3)
+  zzz3<-ilrInv(array(cbind(gam1.3.pred,gam2.3.pred,gam3.3.pred,gam4.3.pred,gam5.3.pred,gam6.3.pred,gam7.3.pred),
+                     dim = c(length(gam1.3.pred),7)),VV3)
+  plot(tt+yearini,gam1.3.pred, type="l",main=title(paste("a.2 Transformed model ilr - Sanitation - ",pais), cex.main=1.2),
+       col=c("blue"),xlab="year",ylab="Transformadas ilr",xlim=xlimgraf,ylim=c(-5,8),cex.axis=1);
+  lines(tt+yearini,gam2.3.pred,type="l",col="green");
+  lines(tt+yearini,gam3.3.pred,type="l",col="black")
+  lines(tt+yearini,gam4.3.pred,type="l",col="purple")
+  lines(tt+yearini,gam5.3.pred,type="l",col="black")
+  lines(tt+yearini,gam6.3.pred,type="l",col="black")
+  lines(tt+yearini,gam7.3.pred,type="l",col="black")
+  points(tt+yearini,dd3[,1],col="blue",pch=13)
+  points(tt+yearini,dd3[,2],col="green",pch=9,text(tt+yearini,dd3[,2],cex = 1.1, pos = 3))
+  points(tt+yearini,dd3[,3],col="purple",pch=8)
+  points(tt+yearini,dd3[,4],col="black",pch=1)
+  points(tt+yearini,dd3[,5],col="black",pch=13)
+  points(tt+yearini,dd3[,6],col="black",pch=9)
+  points(tt+yearini,dd3[,7],col="black",pch=8)
+  legend(2015.5,8,paste(c("ilr ","ilr1 ","ilr2 ","ilr3 ","ilr4 ","ilr5 ","ilr6 ","ilr7 "),
+                        c("  R-adJ", r.sq1.3, r.sq2.3,r.sq3.3, r.sq4.3, r.sq5.3, r.sq6.3, r.sq7.3)),
+         col=c("white","blue","green","black","purple","black","black","black"),pch=c(1,13,9,8,1,13,9,8))
+  
+  
+  #Plot3:Gráfica de outliers en función al año
+  m1=outCoDa(xx1, quantile = 0.975, method = "robust")
+  m2=outCoDa(xx2, quantile = 0.975, method = "robust")
+  m3=outCoDa(xx3, quantile = 0.975, method = "robust")
+  #m2=cbind(m1$mahalDist)
+  #plot(tt+yearini,m2,xlim=xlimgraf, xlab="year",ylab="Robust Mahalanobis distance") # plots robust estimates of Mahalanobis distance
+  #text(tt+yearini,m2,main=title(paste("a.3 Outliers treatment method - Sanitation - ",pais), cex.main=1.2),cex = 1, pos = 1)
+  #Plot4:Gráfica de Outliers
+  plot(m1) # plots robust estimates of Mahalanobis distance
+  plot(m2) # plots robust estimates of Mahalanobis distance
+  plot(m3) # plots robust estimates of Mahalanobis distance
+  
+  
+  #Plot5.1:Métrica de calidad de modelo.
+  a1.1=format(round(NSE(zzz1[,1],xx1[,1]),digits=2),nsmall=2);
+  a2.1=format(round(NSE(zzz1[,2],xx1[,2]),digits=2),nsmall=2);
+  a3.1=format(round(NSE(zzz1[,3],xx1[,3]),digits=2),nsmall=2);
+  a4.1=format(round(NSE(zzz1[,4],xx1[,4]),digits=2),nsmall=2)
+  r1.1=format(round(rmse(zzz1[,1],xx1[,1]),digits=3),nsmall=3);
+  r2.1=format(round(rmse(zzz1[,2],xx1[,2]),digits=3),nsmall=3);
+  r3.1=format(round(rmse(zzz1[,3],xx1[,3]),digits=3),nsmall=3);
+  r4.1=format(round(rmse(zzz1[,4],xx1[,4]),digits=3),nsmall=3)
+  eti=c("Indicador ","Sewer      ","Ot.Impro. ","Open.Def.","Ot.Unimp.");
+  ns=c(" NSE",  a1.1,  a2.1,  a3.1, a4.1);
+  rm=c("RMSE",  r1.1,  r2.1,  r3.1, r4.1);
+  ilr=c("ilr "," ilr1 "," ilr2 "," ilr3 ","      ");
+  radj=c("R-adJ", r.sq1.1, r.sq2.1, r.sq3.1,"     ");
+  plot(year,zzz1[,1],type="n",main=title(paste("a.5 Métrica de calidad de modelo - Sanitation R.- ",pais), cex.main=1.2),
+       xlim=c(2000,2009),ylim=c(0,1),bty="n",xlab="",ylab="",xaxt="n",yaxt="n")
+  legend(2000,0.8,paste(eti,"_",ns,"_",rm,"_",ilr,"_",radj),cex = 1.0)
+  
+  #Plot5.2:Métrica de calidad de modelo.
+  a1.2=format(round(NSE(zzz2[,1],xx2[,1]),digits=2),nsmall=2);
+  a2.2=format(round(NSE(zzz2[,2],xx2[,2]),digits=2),nsmall=2);
+  a3.2=format(round(NSE(zzz2[,3],xx2[,3]),digits=2),nsmall=2);
+  a4.2=format(round(NSE(zzz2[,4],xx2[,4]),digits=2),nsmall=2)
+  r1.2=format(round(rmse(zzz2[,1],xx2[,1]),digits=3),nsmall=3);
+  r2.2=format(round(rmse(zzz2[,2],xx2[,2]),digits=3),nsmall=3);
+  r3.2=format(round(rmse(zzz2[,3],xx2[,3]),digits=3),nsmall=3);
+  r4.2=format(round(rmse(zzz2[,4],xx2[,4]),digits=3),nsmall=3)
+  eti2=c("Indicador ","Sewer      ","Ot.Impro. ","Open.Def.","Ot.Unimp.");
+  ns2=c(" NSE",  a1.2,  a2.2,  a3.2, a4.2);
+  rm2=c("RMSE",  r1.2,  r2.2,  r3.2, r4.2);
+  ilr2=c("ilr "," ilr1 "," ilr2 "," ilr3 ","      ");
+  radj2=c("R-adJ", r.sq1.2, r.sq2.2, r.sq3.2,"     ");
+  plot(year,zzz2[,1],type="n",main=title(paste("a.5 Métrica de calidad de modelo - Sanitation U.- ",pais), cex.main=1.2),
+       xlim=c(2000,2009),ylim=c(0,1),bty="n",xlab="",ylab="",xaxt="n",yaxt="n")
+  legend(2000,0.8,paste(eti2,"_",ns2,"_",rm2,"_",ilr2,"_",radj2),cex = 1.0)
+  
+  
+  #Plot5.2:Métrica de calidad de modelo.
+  a1.3=format(round(NSE(zzz3[,1],xx3[,1]),digits=2),nsmall=2);
+  a2.3=format(round(NSE(zzz3[,2],xx3[,2]),digits=2),nsmall=2);
+  a3.3=format(round(NSE(zzz3[,3],xx3[,3]),digits=2),nsmall=2);
+  a4.3=format(round(NSE(zzz3[,4],xx3[,4]),digits=2),nsmall=2);
+  a5.3=format(round(NSE(zzz3[,5],xx3[,5]),digits=2),nsmall=2);
+  a6.3=format(round(NSE(zzz3[,6],xx3[,6]),digits=2),nsmall=2);
+  a7.3=format(round(NSE(zzz3[,7],xx3[,7]),digits=2),nsmall=2);
+  a8.3=format(round(NSE(zzz3[,8],xx3[,8]),digits=2),nsmall=2);
+  r1.3=format(round(rmse(zzz3[,1],xx3[,1]),digits=3),nsmall=3);
+  r2.3=format(round(rmse(zzz3[,2],xx3[,2]),digits=3),nsmall=3);
+  r3.3=format(round(rmse(zzz3[,3],xx3[,3]),digits=3),nsmall=3);
+  r4.3=format(round(rmse(zzz3[,4],xx3[,4]),digits=3),nsmall=3);
+  r5.3=format(round(rmse(zzz3[,5],xx3[,5]),digits=3),nsmall=3);
+  r6.3=format(round(rmse(zzz3[,6],xx3[,6]),digits=3),nsmall=3);
+  r7.3=format(round(rmse(zzz3[,7],xx3[,7]),digits=3),nsmall=3);
+  r8.3=format(round(rmse(zzz3[,8],xx3[,8]),digits=3),nsmall=3);
+  eti3=c("Indicador ","Sewer_R  ","Ot.Imp._R ","Open.D._R","Ot.Uni._R","Sewer_U    ","Ot.Impr._U","Open.D._U","Ot.Uni._U");
+  ns3=c(" NSE",  a1.3,  a2.3,  a3.3, a4.3, a5.3, a6.3, a7.3, a8.3);
+  rm3=c("RMSE",  r1.3,  r2.3,  r3.3, r4.3, r5.3, r6.3, r7.3, r8.3);
+  ilr3=c("ilr "," ilr1 "," ilr2 "," ilr3 "," ilr4 "," ilr5 "," ilr6 ","ilr7","      ");
+  radj3=c("R-adJ", r.sq1.3, r.sq2.3, r.sq3.3, r.sq4.3, r.sq5.3, r.sq6.3, r.sq7.3,"     ");
+  plot(year,zzz3[,1],type="n",main=title(paste("a.5 Métrica de calidad de modelo - Sanitation U/R.- ",pais), cex.main=1.2),
+       xlim=c(2000,2009),ylim=c(0,1),bty="n",xlab="",ylab="",xaxt="n",yaxt="n")
+  legend(2000,1,paste(eti3,"_",ns3,"_",rm3,"_",ilr3,"_",radj3),cex = 1.0)
+  
+  
+  #Plot6:Gráfica de estimaciones en composiciones (GAM),(Año:2000-2030).
+  ga1.1.pred <- predict.gam(gam1.1, data.frame(tt=tttt));
+  ga2.1.pred <- predict.gam(gam2.1, data.frame(tt=tttt));
+  ga3.1.pred <- predict.gam(gam3.1, data.frame(tt=tttt));
+  z1<-ilrInv(array(cbind(ga1.1.pred,ga2.1.pred,ga3.1.pred),dim = c(length(ga1.1.pred),3)),VV1)
+  g1.1 <- predict.gam(gam1.1, data.frame(tt=ttt));
+  g2.1 <- predict.gam(gam2.1, data.frame(tt=ttt));
+  g3.1 <- predict.gam(gam3.1, data.frame(tt=ttt));
+  z2<-ilrInv(array(cbind(g1.1,g2.1,g3.1),dim = c(length(g1.1),3)),VV1)
+  plot(tttt+yearini,z1[,1], type="l",col=c("blue"),lty=3,
+       xlab="year",ylab="cobertura",xlim=c(2000,2036),ylim=c(0,1),cex.axis=1);
+  lines(tttt+yearini,z1[,2],type="l",col="green",lty=3);
+  lines(tttt+yearini,z1[,3],type="l",col="red",lty=3);
+  lines(tttt+yearini,z1[,4],type="l",col="black",lty=3);
+  lines(ttt+yearini,z2[,1],type="l",col="blue");#estimación1
+  lines(ttt+yearini,z2[,2],type="l",col="green");#estimación2
+  lines(ttt+yearini,z2[,3],type="l",col="red");#estimación3
+  lines(ttt+yearini,z2[,4],type="l",col="black");#estimación4
+  points(tt+yearini,xx1[,1],col="blue",pch=16,bty="l")
+  points(tt+yearini,xx1[,2],col="green",pch=15)
+  points(tt+yearini,xx1[,3],col="red",pch=17)
+  points(tt+yearini,xx1[,4],col="black",pch=18)
+  points(year1.1,yy1[,1],col="blue",pch=1)
+  points(year1.1,yy1[,2],col="green",pch=0)
+  points(year1.1,yy1[,3],col="red",pch=2, cex=2)
+  points(year1.1,yy1[,4],col="black",pch=5)
+  legend(2026,0.6,c("Sewer","Ot.Improved","Open_defecation","Ot.Unimproved"),
+         col=c("blue","green","red","black"),pch=c(16,15,17,18))
+  
+  #Plot6.2:Gráfica de estimaciones en composiciones (GAM),(Año:2000-2030).
+  ga1.2.pred <- predict.gam(gam1.2, data.frame(tt=tttt));
+  ga2.2.pred <- predict.gam(gam2.2, data.frame(tt=tttt));
+  ga3.2.pred <- predict.gam(gam3.2, data.frame(tt=tttt));
+  z1.2<-ilrInv(array(cbind(ga1.2.pred,ga2.2.pred,ga3.2.pred),dim = c(length(ga1.2.pred),3)),VV2)
+  g1.2 <- predict.gam(gam1.2, data.frame(tt=ttt));
+  g2.2 <- predict.gam(gam2.2, data.frame(tt=ttt));
+  g3.2 <- predict.gam(gam3.2, data.frame(tt=ttt));
+  z2.2<-ilrInv(array(cbind(g1.2,g2.2,g3.2),dim = c(length(g1.2),3)),VV2)
+  plot(tttt+yearini,z1.2[,1], type="l",col=c("blue"),lty=3,
+       xlab="year",ylab="cobertura",xlim=c(2000,2036),ylim=c(0,1),cex.axis=1);
+  lines(tttt+yearini,z1.2[,2],type="l",col="green",lty=3);
+  lines(tttt+yearini,z1.2[,3],type="l",col="red",lty=3);
+  lines(tttt+yearini,z1.2[,4],type="l",col="black",lty=3);
+  lines(ttt+yearini,z2.2[,1],type="l",col="blue");#estimación1
+  lines(ttt+yearini,z2.2[,2],type="l",col="green");#estimación2
+  lines(ttt+yearini,z2.2[,3],type="l",col="red");#estimación3
+  lines(ttt+yearini,z2.2[,4],type="l",col="black");#estimación4
+  points(tt+yearini,xx2[,1],col="blue",pch=16,bty="l")
+  points(tt+yearini,xx2[,2],col="green",pch=15)
+  points(tt+yearini,xx2[,3],col="red",pch=17)
+  points(tt+yearini,xx2[,4],col="black",pch=18)
+  points(year2.1,yy2[,1],col="blue",pch=1)
+  points(year2.1,yy2[,2],col="green",pch=0)
+  points(year2.1,yy2[,3],col="red",pch=2, cex=2)
+  points(year2.1,yy2[,4],col="black",pch=5)
+  legend(2026,0.6,c("Sewer","Ot.Improved","Open_defecation","Ot.Unimproved"),
+         col=c("blue","green","red","black"),pch=c(16,15,17,18))
+  
+  #Plot6.2:Gráfica de estimaciones en composiciones (GAM),(Año:2000-2030).
+  ga1.3.pred <- predict.gam(gam1.3, data.frame(tt=tttt));
+  ga2.3.pred <- predict.gam(gam2.3, data.frame(tt=tttt));
+  ga3.3.pred <- predict.gam(gam3.3, data.frame(tt=tttt));
+  ga4.3.pred <- predict.gam(gam4.3, data.frame(tt=tttt));
+  ga5.3.pred <- predict.gam(gam5.3, data.frame(tt=tttt));
+  ga6.3.pred <- predict.gam(gam6.3, data.frame(tt=tttt));
+  ga7.3.pred <- predict.gam(gam7.3, data.frame(tt=tttt));
+  z1.3<-ilrInv(array(cbind(ga1.3.pred,ga2.3.pred,ga3.3.pred,ga4.3.pred,
+                           ga5.3.pred,ga6.3.pred,ga7.3.pred),dim = c(length(ga1.3.pred),7)),VV3)
+  g1.3 <- predict.gam(gam1.3, data.frame(tt=ttt));
+  g2.3 <- predict.gam(gam2.3, data.frame(tt=ttt));
+  g3.3 <- predict.gam(gam3.3, data.frame(tt=ttt));
+  g4.3 <- predict.gam(gam4.3, data.frame(tt=ttt));
+  g5.3 <- predict.gam(gam5.3, data.frame(tt=ttt));
+  g6.3 <- predict.gam(gam6.3, data.frame(tt=ttt));
+  g7.3 <- predict.gam(gam7.3, data.frame(tt=ttt));
+  z2.3<-ilrInv(array(cbind(g1.3,g2.3,g3.3,g4.3,g5.3,g6.3,g7.3),dim = c(length(g1.3),7)),VV3)
+  plot(tttt+yearini,z1.3[,1], type="l",col=c("blue"),lty=3,
+       xlab="year",ylab="cobertura",xlim=c(2000,2036),ylim=c(0,1),cex.axis=1);
+  lines(tttt+yearini,z1.3[,2],type="l",col="green",lty=3);
+  lines(tttt+yearini,z1.3[,3],type="l",col="red",lty=3);
+  lines(tttt+yearini,z1.3[,4],type="l",col="purple",lty=3);
+  lines(tttt+yearini,z1.3[,5],type="l",col="black",lty=3);
+  lines(tttt+yearini,z1.3[,6],type="l",col="black",lty=3);
+  lines(tttt+yearini,z1.3[,7],type="l",col="black",lty=3);
+  lines(tttt+yearini,z1.3[,8],type="l",col="black",lty=3);
+  lines(ttt+yearini,z2.3[,1],type="l",col="blue");#estimación1
+  lines(ttt+yearini,z2.3[,2],type="l",col="green");#estimación2
+  lines(ttt+yearini,z2.3[,3],type="l",col="red");#estimación3
+  lines(ttt+yearini,z2.3[,4],type="l",col="purple");#estimación4
+  lines(ttt+yearini,z2.3[,5],type="l",col="black");#estimación4
+  lines(ttt+yearini,z2.3[,6],type="l",col="black");#estimación4
+  lines(ttt+yearini,z2.3[,7],type="l",col="black");#estimación4
+  lines(ttt+yearini,z2.3[,8],type="l",col="black");#estimación4
+  points(tt+yearini,xx3[,1],col="blue",pch=16,bty="l")
+  points(tt+yearini,xx3[,2],col="green",pch=15)
+  points(tt+yearini,xx3[,3],col="red",pch=17)
+  points(tt+yearini,xx3[,4],col="purple",pch=18)
+  points(tt+yearini,xx3[,5],col="black",pch=16)
+  points(tt+yearini,xx3[,6],col="black",pch=15)
+  points(tt+yearini,xx3[,7],col="black",pch=17)
+  points(tt+yearini,xx3[,8],col="black",pch=18)
+  points(year3.1,yy3[,1],col="blue",pch=1)
+  points(year3.1,yy3[,2],col="green",pch=0)
+  points(year3.1,yy3[,3],col="red",pch=2, cex=2)
+  points(year3.1,yy3[,4],col="purple",pch=5)
+  points(year3.1,yy3[,5],col="black",pch=1)
+  points(year3.1,yy3[,6],col="black",pch=0)
+  points(year3.1,yy3[,7],col="black",pch=2)
+  points(year3.1,yy3[,8],col="black",pch=5)
+  legend(2026,0.6,c("Sew_R","Ot.Impro_R","Open_defeca_R","Ot.Unimpr_R",
+                    "Sew_U","Ot.Improv_U","Open_defecati_U","Ot.Unimprov_U"),
+         col=c("blue","green","red","purple","black","black","black","black"),pch=c(16,15,17,18,16,15,17,18)) 
+  
+}
+
+data0 <- data0W;  # Sanitation
+iipais<-1; 
+
+for (iipais in c(1:length(levels(data0$country))))
+{par(mfrow=c(6,3))
+  pais<-levels(data0$country)[iipais]; data<-data0[data0$country==pais,]; 
+  
+  #verificar el siguiente código
+  aux<-!is.na(data[,12]); xx<-data[aux,c(12:15)];year<-data[aux,4]
+  
+  #RURAL_CoDa_4
+  aux1<-!is.na(data[,12]); xx1<-data[aux1,c(12:15)];year1<-data[aux1,4];yy1<-data1w[aux1,c(12:15)];
+  year1.1<-data1w[aux1,4];xx1[xx1==0.]<-deltazero;
+  signs1 <- rbind (c( 1, 1, -1, -1),c(1, -1, 0, 0),c(0, 0, 1, -1)); 
+  VV1=gsi.buildilrBase(t(signs1))
+  
+  #URBAN_CoDa_4 
+  aux2<-!is.na(data[,16]); xx2<-data[aux2,c(16:19)];year2<-data[aux2,4];yy2<-data1w[aux2,c(16:19)];
+  year2.1<-data1w[aux2,4];xx2[xx2==0.]<-deltazero;
+  signs2 <- rbind (c( 1, 1, -1, -1),c(1, -1, 0, 0),c(0, 0, 1, -1)); 
+  VV2=gsi.buildilrBase(t(signs2))
+  
+  #RURAL/URBAN_CoDa_8
+  aux3<-!is.na(data[,20]); xx3<-data[aux3,c(20:27)];year3<-data[aux3,4];yy3<-data1w[aux3,c(20:27)];
+  year3.1<-data1w[aux3,4];xx3[xx3==0.]<-deltazero;
+  signs3 <- rbind (c( 1, 1, 1, 1, -1, -1, -1, -1), c( 1, 1, -1, -1, 0, 0, 0, 0),
+                   c( 1, -1, 0, 0, 0, 0, 0, 0), c( 0, 0, 1, -1, 0, 0, 0, 0),
+                   c( 0, 0, 0, 0, 1, 1, -1, -1), c( 0, 0, 0, 0, 1, -1, 0, 0),
+                   c( 0, 0, 0, 0, 0, 0, 1, -1))
+  VV3=gsi.buildilrBase(t(signs3))
+  
+  #Plot
+  graficoVV(xx1,xx2,xx3,year1,year2,year3,ylimgraf4,xlimgraf,VV1,VV2,VV3,kk,yy1,yy2,yy3,year1.1,year2.1,year3.1)
+  title(paste("a.6 Sanitation - ",pais), cex.main=1.2)
+  par(mfrow=c(1,1))}
+#
+if(plotpdf){dev.off()}
