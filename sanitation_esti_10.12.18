@@ -3,9 +3,9 @@ library(graphics); library(compositions); library(mgcv);library(robCompositions)
 library(mvoutlier);#library(gridExtra)
 #library(ggplot2)
 #
-setwd("F:/02 Congreso AIDIS/r/02.Sanitation/Calibra.sani.29.11.18")
+setwd("xxxx")
 
-filename<-"Sanitation_as1.csv"; 
+filename<-"xxx.csv"; 
 data<-read.csv(file=filename, header=TRUE, sep = ";", dec = "."); 
 data0W<-data[1:14,]; data1w<-data[15:18,];
 levels(data0W$country)
@@ -40,7 +40,7 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk,yy,year2){
   ttt=c(2000:max(year)) - yearini 
   tttt<-c(2000:2030) - yearini 
   
-
+  
   #Plot1:Gráfica de composiciones
   plot(tt+yearini,xx[,1], lwd=c(1),main=title(paste("a.1 Data compositional - Sanitation - ",pais), cex.main=1.2),
        col=c("blue"),pch=c(16),xlim=xlimgraf,ylim=ylimgraf,xlab="year",ylab="cobertura", cex.axis=1);
@@ -51,9 +51,15 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk,yy,year2){
   
   #Plot2:Gráfica de Transformadas(ilr)
   dd<- unclass(ilr(xx,VV));
-  gam1 <- gam(dd[,1]~ s(year,k=kk), family=gaussian); gam1.pred <- predict.gam(gam1);r.sq1=format(round(summary(gam1)$r.sq,digits=3),nsmall=3)
-  gam2 <- gam(dd[,2]~ s(year,k=kk), family=gaussian); gam2.pred <- predict.gam(gam2);r.sq2=format(round(summary(gam2)$r.sq,digits=3),nsmall=3)
-  gam3 <- gam(dd[,3]~ s(year,k=kk), family=gaussian); gam3.pred <- predict.gam(gam3);r.sq3=format(round(summary(gam3)$r.sq,digits=3),nsmall=3)
+  gam1 <- gam(dd[,1]~ s(year,k=kk), family=gaussian); 
+  gam2 <- gam(dd[,2]~ s(year,k=kk), family=gaussian);
+  gam3 <- gam(dd[,3]~ s(year,k=kk), family=gaussian); 
+  gam1.pred <- predict.gam(gam1);
+  gam2.pred <- predict.gam(gam2);
+  gam3.pred <- predict.gam(gam3);
+  r.sq1=format(round(summary(gam1)$r.sq,digits=3),nsmall=3)
+  r.sq2=format(round(summary(gam2)$r.sq,digits=3),nsmall=3)
+  r.sq3=format(round(summary(gam3)$r.sq,digits=3),nsmall=3)
   zzz1<-ilrInv(array(cbind(gam1.pred,gam2.pred,gam3.pred),dim = c(length(gam1.pred),3)),VV)
   plot(tt+yearini,gam1.pred, type="l",main=title(paste("a.2 Transformed model ilr - Sanitation - ",pais), cex.main=1.2),
        col=c("blue"),xlab="year",ylab="Transformadas ilr",xlim=xlimgraf,ylim=c(-5,8),cex.axis=1);
@@ -77,16 +83,29 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk,yy,year2){
   
   
   #Plot5:Métrica de calidad de modelo.
-  a1=format(round(NSE(zzz1[,1],xx[,1]),digits=2),nsmall=2);a2=format(round(NSE(zzz1[,2],xx[,2]),digits=2),nsmall=2);a3=format(round(NSE(zzz1[,3],xx[,3]),digits=2),nsmall=2);a4=format(round(NSE(zzz1[,4],xx[,4]),2),nsmall=2)
-  r1=format(round(rmse(zzz1[,1],xx[,1]),digits=3),nsmall=3);r2=format(round(rmse(zzz1[,2],xx[,2]),digits=3),nsmall=3);r3=format(round(rmse(zzz1[,3],xx[,3]),digits=3),nsmall=3);r4=format(round(rmse(zzz1[,4],xx[,4]),3),nsmall=3)
-  eti=c("Indicador ","Sewer      ","Ot.Impro. ","Open.Def.","Ot.Unimp.");ns=c(" NSE",  a1,  a2,  a3, a4);rm=c("RMSE",  r1,  r2,  r3, r4);ilr=c("ilr "," ilr1 "," ilr2 "," ilr3 ","      ");radj=c("R-adJ", r.sq1, r.sq2, r.sq3,"     ")
+  a1=format(round(NSE(zzz1[,1],xx[,1]),digits=2),nsmall=2);
+  a2=format(round(NSE(zzz1[,2],xx[,2]),digits=2),nsmall=2);
+  a3=format(round(NSE(zzz1[,3],xx[,3]),digits=2),nsmall=2);
+  a4=format(round(NSE(zzz1[,4],xx[,4]),digits=2),nsmall=2)
+  r1=format(round(rmse(zzz1[,1],xx[,1]),digits=3),nsmall=3);
+  r2=format(round(rmse(zzz1[,2],xx[,2]),digits=3),nsmall=3);
+  r3=format(round(rmse(zzz1[,3],xx[,3]),digits=3),nsmall=3);
+  r4=format(round(rmse(zzz1[,4],xx[,4]),digits=3),nsmall=3)
+  eti=c("Indicador ","Sewer      ","Ot.Impro. ","Open.Def.","Ot.Unimp.");
+  ns=c(" NSE",  a1,  a2,  a3, a4);
+  rm=c("RMSE",  r1,  r2,  r3, r4);
+  ilr=c("ilr "," ilr1 "," ilr2 "," ilr3 ","      ");
+  radj=c("R-adJ", r.sq1, r.sq2, r.sq3,"     ");
   plot(year,zzz1[,1],type="n",main=title(paste("a.5 Métrica de calidad de modelo - Sanitation - ",pais), cex.main=1.2),xlim=c(2000,2009),ylim=c(0,1),bty="n",xlab="",ylab="",xaxt="n",yaxt="n")
   legend(2000,0.8,paste(eti,"_",ns,"_",rm,"_",ilr,"_",radj),cex = 1.5)
   
   #Plot6:Gráfica de estimaciones en composiciones (GAM),(Año:2000-2030).
-  gam1 <- gam(dd[,1] ~ s(tt,k=kk), family=gaussian); gam1.pred <- predict.gam(gam1, data.frame(tt=tttt));
-  gam2 <- gam(dd[,2] ~ s(tt,k=kk), family=gaussian); gam2.pred <- predict.gam(gam2, data.frame(tt=tttt));
-  gam3 <- gam(dd[,3] ~ s(tt,k=kk), family=gaussian); gam3.pred <- predict.gam(gam3, data.frame(tt=tttt));
+  gam1 <- gam(dd[,1] ~ s(tt,k=kk), family=gaussian); 
+  gam2 <- gam(dd[,2] ~ s(tt,k=kk), family=gaussian); 
+  gam3 <- gam(dd[,3] ~ s(tt,k=kk), family=gaussian); 
+  gam1.pred <- predict.gam(gam1, data.frame(tt=tttt));
+  gam2.pred <- predict.gam(gam2, data.frame(tt=tttt));
+  gam3.pred <- predict.gam(gam3, data.frame(tt=tttt));
   zzz2<-ilrInv(array(cbind(gam1.pred,gam2.pred,gam3.pred),dim = c(length(gam1.pred),3)),VV)
   g1 <- predict.gam(gam1, data.frame(tt=ttt));
   g2 <- predict.gam(gam2, data.frame(tt=ttt));
@@ -138,4 +157,3 @@ for (iipais in c(1:length(levels(data0$country))))
 
 #
 if(plotpdf){dev.off()}
-
