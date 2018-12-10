@@ -96,7 +96,8 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk,yy,year2){
   rm=c("RMSE",  r1,  r2,  r3, r4);
   ilr=c("ilr "," ilr1 "," ilr2 "," ilr3 ","      ");
   radj=c("R-adJ", r.sq1, r.sq2, r.sq3,"     ");
-  plot(year,zzz1[,1],type="n",main=title(paste("a.5 Métrica de calidad de modelo - Sanitation - ",pais), cex.main=1.2),xlim=c(2000,2009),ylim=c(0,1),bty="n",xlab="",ylab="",xaxt="n",yaxt="n")
+  plot(year,zzz1[,1],type="n",main=title(paste("a.5 Métrica de calidad de modelo - Sanitation - ",pais), cex.main=1.2),
+       xlim=c(2000,2009),ylim=c(0,1),bty="n",xlab="",ylab="",xaxt="n",yaxt="n")
   legend(2000,0.8,paste(eti,"_",ns,"_",rm,"_",ilr,"_",radj),cex = 1.5)
   
   #Plot6:Gráfica de estimaciones en composiciones (GAM),(Año:2000-2030).
@@ -111,7 +112,8 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk,yy,year2){
   g2 <- predict.gam(gam2, data.frame(tt=ttt));
   g3 <- predict.gam(gam3, data.frame(tt=ttt));
   zzz3<-ilrInv(array(cbind(g1,g2,g3),dim = c(length(g1),3)),VV)
-  plot(tttt+yearini,zzz2[,1], type="l",col=c("blue"),lty=3,xlab="year",ylab="cobertura",xlim=c(2000,2036),ylim=c(0,1),cex.axis=1);
+  plot(tttt+yearini,zzz2[,1], type="l",col=c("blue"),lty=3,
+       xlab="year",ylab="cobertura",xlim=c(2000,2036),ylim=c(0,1),cex.axis=1);
   lines(tttt+yearini,zzz2[,2],type="l",col="green",lty=3);
   lines(tttt+yearini,zzz2[,3],type="l",col="red",lty=3);
   lines(tttt+yearini,zzz2[,4],type="l",col="black",lty=3);
@@ -127,7 +129,8 @@ graficoVV<-function(xx,year,ylimgraf,xlimgraf,VV,kk,yy,year2){
   points(year2,yy[,2],col="green",pch=0)
   points(year2,yy[,3],col="red",pch=2, cex=2)
   points(year2,yy[,4],col="black",pch=5)
-  legend(2026,0.6,c("Sewer","Ot.Improved","Open_defecation","Ot.Unimproved"),col=c("blue","green","red","black"),pch=c(16,15,17,18))
+  legend(2026,0.6,c("Sewer","Ot.Improved","Open_defecation","Ot.Unimproved"),
+         col=c("blue","green","red","black"),pch=c(16,15,17,18))
   
 }
 
