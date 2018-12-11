@@ -216,11 +216,16 @@ graficoVV<-function(xx1,xx2,xx3,year1,year2,year3,xlimgraf,VV1,VV2,VV3,kk,yy1,yy
   tti<-ilrInv(array(cbind(tx1,tx2,tx3,tx4,tx5,tx6,tx7),dim = c(length(tx1),7)),VV3)
   ttx=tti[,1]+tti[,2]+tti[,3]+tti[,4]
   ttx2=tti[,5]+tti[,6]+tti[,7]+tti[,8]
-  tt_r=c("Año_2010",round((tti[,1]/ttx)*100,2),round((tti[,2]/ttx)*100,2),round((tti[,3]/ttx)*100,2),round((tti[,4]/ttx)*100,2));
-  tt_u=c("Año_2010",round((tti[,5]/ttx2)*100,2),round((tti[,6]/ttx2)*100,2),round((tti[,7]/ttx2)*100,2),round((tti[,8]/ttx2)*100,2));
+  tt_r=c("Año_2010",format(round((tti[,1]/ttx)*100,2),nsmall=2),
+         format(round((tti[,2]/ttx)*100,2),nsmall=2),
+         format(round((tti[,3]/ttx)*100,2),nsmall=2),
+         format(round((tti[,4]/ttx)*100,2),nsmall=2));
+  tt_u=c("Año_2010",format(round((tti[,5]/ttx2)*100,2),nsmall=2),
+         format(round((tti[,6]/ttx2)*100,2),nsmall=2),
+         format(round((tti[,7]/ttx2)*100,2),nsmall=2),
+         format(round((tti[,8]/ttx2)*100,2),nsmall=2));
   
   #### NSE de predicciones, entre CoDa_8 y CoDa_4.
-  
   nse1=format(round(NSE(z1[,1],at1.1),digits=2),nsmall=2);
   nse2=format(round(NSE(z1[,2],at1.2),digits=2),nsmall=2);
   nse3=format(round(NSE(z1[,3],at1.3),digits=2),nsmall=2);
