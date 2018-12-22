@@ -1,0 +1,106 @@
+rm(list = ls())
+library(graphics); library(compositions); library(mgcv);library(robCompositions);library(hydroGOF);
+library(mvoutlier);#library(gridExtra)
+#library(ggplot2)
+#
+setwd("F:/02 Congreso AIDIS/r/01.Water/Calibra.water.29.11.18/plot ilr1,ilr2,ilr3")
+
+filename1<-"Water_as.csv"; filename2<-"Sanitation_as.csv";
+data1<-read.csv(file=filename1, header=TRUE, sep = ";", dec = "."); levels(data1$country)
+data2<-read.csv(file=filename2, header=TRUE, sep = ";", dec = "."); levels(data2$country)
+
+#Water
+a1<-data1[,c(10:13)]#Rural
+a2<-data1[,c(14:17)]#Urban
+#Sanitation
+s1<-data2[,c(10:13)]#Rural
+s2<-data2[,c(14:17)]#Urban
+let=0.001
+lax1="white"#rural
+lax2="white"#urban
+cex1=0.9#cex de legend
+#transformadas ilr
+signs1 <- rbind (c( 1, 1, -1, -1),c(1, -1, 0, 0),c(0, 0, 1, -1));VV1=gsi.buildilrBase(t(signs1))
+aa1<- unclass(ilr(a1,VV1));#rural-water
+aa2<- unclass(ilr(a2,VV1));#urban-water
+ss1<- unclass(ilr(s1,VV1));#rural-sanitation
+ss2<- unclass(ilr(s2,VV1));#Urban-sanitation
+
+#data3=cbind(data1,ilr.r=aa1)
+#data3=cbind(data3,ilr.u=aa2)
+#write.csv(data3,file="prueba1.csv",sep= ";", dec= ".")
+
+
+#plot
+par(mfrow=c(2,3))
+
+#1.0 Gráficando ilr1
+##Water ilr1
+plot(data1[,6],aa1[,1],col="green", ylim=c(-2,8),xlim=c(0.5,1.1),
+     xlab="Improved",ylab="ilr1",
+     pch=15,text(data1[,6],aa1[,1],
+                labels=paste(data1[,1]),cex = let, pos = 3,col=lax1))
+points(data1[,8],aa2[,1],col="blue",pch=19,
+       text(data1[,8],aa2[,1],labels=paste(data1[,1]),
+            cex = let, pos = 4,col=lax2))
+legend("topleft",paste(c("wat.Rural","wat.Urban")),
+       col=c("green","blue"),pch=c(15,19),cex=cex1)
+
+##Water ilr2
+plot(data1[,10],aa1[,2],col="green", ylim=c(-5,7),xlim=c(0,1.1),
+     xlab="Piped",ylab="ilr2",
+     pch=15,text(data1[,10],aa1[,2],
+                 labels=paste(data1[,1]),cex = let, pos = 3,col=lax1))#rural
+points(data1[,14],aa2[,2],col="blue",pch=19,
+       text(data1[,14],aa2[,2],labels=paste(data1[,1]),
+            cex = let, pos = 2,col=lax2))#urban
+legend("bottomright",paste(c("wat.Rural","wat.Urban")),
+       col=c("green","blue"),pch=c(15,19),cex=cex1)
+
+##Water ilr3
+plot(data1[,12],aa1[,3],col="green", ylim=c(-5,5),xlim=c(0,1.1),
+     xlab="Surface",ylab="ilr3",
+     pch=15,text(data1[,12],aa1[,3],
+                 labels=paste(data1[,1]),cex = let, pos = 3,col=lax1))
+points(data1[,16],aa2[,3],col="blue",pch=19,
+       text(data1[,16],aa2[,3],labels=paste(data1[,1]),
+            cex = let, pos = 2,col=lax2))
+legend("bottomright",paste(c("wat.Rural","wat.Urban")),
+       col=c("green","blue"),pch=c(15,19),cex=cex1)
+
+#xxxxxxxxxxxxxxxxxxxxxxx
+
+#2.0 Gráficando ilr
+##Sanitation ilr1
+plot(data2[,6],ss1[,1],col="green", ylim=c(-2,8),xlim=c(0,1.1),
+     xlab="Improved",ylab="ilr1",
+     pch=15,text(data2[,6],ss1[,1],
+                 labels=paste(data2[,1]),cex = let, pos = 3,col=lax1),cex=1)
+points(data2[,8],ss2[,1],col="blue",pch=19,
+       text(data2[,8],ss2[,1],labels=paste(data2[,1]),
+            cex = let, pos = 2,col=lax2),cex=1)
+legend("bottomright",paste(c("San.Rural","San.Urban")),
+       col=c("green","blue"),pch=c(15,19),cex=0.8)
+
+##Sanitation ilr2
+plot(data2[,10],ss1[,2],col="green", ylim=c(-5,7),xlim=c(0,1.1),
+     xlab="Sewer",ylab="ilr2",
+     pch=15,text(data2[,10],ss1[,2],
+                 labels=paste(data2[,1]),cex = let, pos = 3,col=lax1))#rural
+points(data2[,14],ss2[,2],col="blue",pch=19,
+       text(data2[,14],ss2[,2],labels=paste(data2[,1]),
+            cex = let, pos = 2,col=lax2))#urban
+legend("bottomright",paste(c("San.Rural","San.Urban")),
+       col=c("green","blue"),pch=c(15,19),cex=cex1)
+
+##Sanitation ilr3
+plot(data2[,12],ss1[,3],col="green", ylim=c(-5,5),xlim=c(0,1.1),
+     xlab="Open_Defecation",ylab="ilr3",
+     pch=15,text(data2[,12],ss1[,3],
+                 labels=paste(data2[,1]),cex = let, pos = 3,col=lax1))
+points(data2[,16],ss2[,3],col="blue",pch=19,
+       text(data2[,16],ss2[,3],labels=paste(data2[,1]),
+            cex = let, pos = 2,col=lax2))
+legend("bottomright",paste(c("San.Rural","San.Urban")),
+       col=c("green","blue"),pch=c(15,19),cex=cex1)
+
