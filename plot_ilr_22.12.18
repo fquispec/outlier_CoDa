@@ -37,7 +37,7 @@ par(mfrow=c(2,3))
 #1.0 Gráficando ilr1
 ##Water ilr1
 plot(data1[,6],aa1[,1],col="green", ylim=c(-2,8),xlim=c(0.5,1.1),
-     xlab="Improved",ylab="ilr1",
+     xlab="Improved",ylab="ilr1_wat.",
      pch=15,text(data1[,6],aa1[,1],
                 labels=paste(data1[,1]),cex = let, pos = 3,col=lax1))
 points(data1[,8],aa2[,1],col="blue",pch=19,
@@ -48,7 +48,7 @@ legend("topleft",paste(c("wat.Rural","wat.Urban")),
 
 ##Water ilr2
 plot(data1[,10],aa1[,2],col="green", ylim=c(-5,7),xlim=c(0,1.1),
-     xlab="Piped",ylab="ilr2",
+     xlab="Piped",ylab="ilr2_wat.",
      pch=15,text(data1[,10],aa1[,2],
                  labels=paste(data1[,1]),cex = let, pos = 3,col=lax1))#rural
 points(data1[,14],aa2[,2],col="blue",pch=19,
@@ -59,7 +59,7 @@ legend("bottomright",paste(c("wat.Rural","wat.Urban")),
 
 ##Water ilr3
 plot(data1[,12],aa1[,3],col="green", ylim=c(-5,5),xlim=c(0,1.1),
-     xlab="Surface",ylab="ilr3",
+     xlab="Surface",ylab="ilr3_wat.",
      pch=15,text(data1[,12],aa1[,3],
                  labels=paste(data1[,1]),cex = let, pos = 3,col=lax1))
 points(data1[,16],aa2[,3],col="blue",pch=19,
@@ -73,7 +73,7 @@ legend("bottomright",paste(c("wat.Rural","wat.Urban")),
 #2.0 Gráficando ilr
 ##Sanitation ilr1
 plot(data2[,6],ss1[,1],col="green", ylim=c(-2,8),xlim=c(0,1.1),
-     xlab="Improved",ylab="ilr1",
+     xlab="Improved",ylab="ilr1_san.",
      pch=15,text(data2[,6],ss1[,1],
                  labels=paste(data2[,1]),cex = let, pos = 3,col=lax1),cex=1)
 points(data2[,8],ss2[,1],col="blue",pch=19,
@@ -84,7 +84,7 @@ legend("bottomright",paste(c("San.Rural","San.Urban")),
 
 ##Sanitation ilr2
 plot(data2[,10],ss1[,2],col="green", ylim=c(-5,7),xlim=c(0,1.1),
-     xlab="Sewer",ylab="ilr2",
+     xlab="Sewer",ylab="ilr2_san.",
      pch=15,text(data2[,10],ss1[,2],
                  labels=paste(data2[,1]),cex = let, pos = 3,col=lax1))#rural
 points(data2[,14],ss2[,2],col="blue",pch=19,
@@ -95,7 +95,7 @@ legend("bottomright",paste(c("San.Rural","San.Urban")),
 
 ##Sanitation ilr3
 plot(data2[,12],ss1[,3],col="green", ylim=c(-5,5),xlim=c(0,1.1),
-     xlab="Open_Defecation",ylab="ilr3",
+     xlab="Open_Defecation",ylab="ilr3_san.",
      pch=15,text(data2[,12],ss1[,3],
                  labels=paste(data2[,1]),cex = let, pos = 3,col=lax1))
 points(data2[,16],ss2[,3],col="blue",pch=19,
